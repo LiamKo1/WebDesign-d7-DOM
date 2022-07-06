@@ -1,7 +1,7 @@
 'use strict';
 
 //Create a variable `form` that refers to the `<form>` element in the DOM.
-
+let form = document.querySelector("form")
 /* Add an event listener to the `form` element that will listen for `'submit'` 
 type events (which occur when the form is submitted). In the callback function 
 for this event listener, do the following:
@@ -19,7 +19,18 @@ for this event listener, do the following:
      attribute a value of `true` (set the attribute directly with dot notation, 
      don't use `setAttribute()`).
 */
-
+form.addEventListener("click", function(event){
+    event.preventDefault();
+    let ifValid = form.checkValidity();
+    if (ifValid) {
+      form.classList.add("d-none")
+      document.querySelector(".alert").classList.remove("d-none")
+    }else{
+      form.classList.add("was-validated");
+      document.querySelector("button").disabled="true"
+    
+    }
+})
 
 /* You should now be able to submit the form and see it highlight fields that 
 are invalid. This validity is based on HTML attributes; for example, the "email"
@@ -59,7 +70,17 @@ The "Date of Birth" should now show an error when empty or if the year is too
 recent; otherwise it should highlight as valid. Note that you'll need to hit
 "Sign me up!" first to enable the validation highlighting!
 */
-
+let input = document.querySelector("#dobInput");
+input.addEventListener('input', function(event){
+  let value = event.target.value;
+  let age = getYearsSince(value)
+  if (age<13){
+    input.setCustomValidity("You need to be at least 13 years old.")
+    document.querySelector("#dobFeedback").textContent = "You need to be at least 13 years old."
+  } else {
+    input.setCustomValidity("")
+  }
+})
 
 /* Next you'll make sure the two "password" fields match. Start by defining a
 function `validatePasswordMatch()`. This function should access both password
@@ -74,16 +95,31 @@ function `validatePasswordMatch()`. This function should access both password
   Also change the `#passwordConfirmFeedback` element so its `textContent` is
   also blank (an empty string).
 */
-
-
-
+function validatePasswordMatch(){
+  let pass1 = document.querySelector("#passwordInput")
+  let confirmPass = document.querySelector("#passwordConfirmInput")
+  // console.log(document.querySelector("passwordInput").value)
+  // console.log(document.querySelector("passwordConfirmInput").value)
+  if(pass1.value!==confirmPass.value){
+    confirmPass.setCustomValidity("Passwords do not match.")
+    document.querySelector("#passwordConfimFeedback").textContent="Passwords do not match."
+  }else{
+    confirmPass.setCustomValidity("");
+    document.querySelector("#passwordConfirmFeedback").textContent = ""
+  }
+  console.log(document.querySelector("passwordInput").textContent)
+}
 /* Assign the `validatePasswordMatch` function as the callback for `input` 
 events that happen on BOTH the `#passwordInput` and `#passwordConfirmInput`
 elements. You can select the elements individually or using `querySelectorAll()`.
 */
+document.querySelectorAll('[type*="password"]').forEach(function(element){
+  element.addEventListener("input", function(){validatePasswordMatch()})
+})
 
-
-
+// document.querySelector("#passwordInput") . addEventListener("input", function(){validatePasswordMatch()})
+// document.querySelector('passwordConfirmInput')
+// .addEventListener('input',function(){validatePasswordMatch()})
 
 /* Last you'll need to only enable the "submit" button if the form is valid. Use
 the `querySelectorAll()` method to select all 4 of the <input> elements. Use the
@@ -96,8 +132,17 @@ if the <form> element has the `was-validated` class. If so, set the button's
 This should disable the button until all of the fields are valid, but only after
 the user tries to submit once (which is a polite user experience)
 */
-
-
+let allInput = document.querySelectorAll("input")
+allInput.forEach(function(item){
+  item.addEventListener('input', function(){
+  let ifValidated = document . querySelector("form").classList.contains("was-validated")
+  if(ifValidated){
+    document.querySelector("button").disabled = 'true'
+  }else{
+    document.querySelector("button").disabled = 'false'
+  }
+  })
+})
 //Make functions and variables available to tester. DO NOT MODIFY THIS.
 if(typeof module !== 'undefined' && module.exports){
   /* eslint-disable */
